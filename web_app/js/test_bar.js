@@ -1,8 +1,5 @@
 function stackedBar(year) {
 
-
-
-
   // Fetch the CSV file
   fetch('js/master_merged_df_renamed.csv')
     .then(response => response.text())
@@ -15,26 +12,26 @@ function stackedBar(year) {
           // papaResults.data contains the parsed data as an array of objects
           const monthlyData = papaResults.data;
 
-          let samples = monthlyData.samples;
+          // let samples = monthlyData.samples;
           let data2023 = monthlyData.filter((sample) => sample.Year === 2023);
-          let dataVariable = monthlyData.filter((sample) => sample.Year === year);
+          let dataVariable = monthlyData.filter((sample) => sample.Year === parseInt(year));
 
           const trace1 = {
             x: dataVariable.map(entry => entry.Month).reverse(),
-            y: dataVariable.map(entry => entry.cumulativeGross).reverse(),
+            y: dataVariable.map(entry => entry.holidayGross).reverse(),
             type: 'bar',
             marker: { color: '#000000' },
             opacity: .7,
-            name: `${year} Cumulative Gross`
+            name: `${year} Holiday Gross`
           }
 
           const trace2 = {
             x: dataVariable.map(entry => entry.Month).reverse(),
-            y: dataVariable.map(entry => entry.holidayGross).reverse(),
+            y: dataVariable.map(entry => entry.netGross).reverse(),
             type: 'bar',
             marker: { color: '#596BC2' },
             opacity: .7,
-            name: `${year} Holiday Gross`
+            name: `${year} Non-Holiday Gross`
           }
 
           var trace3 = {
@@ -52,25 +49,6 @@ function stackedBar(year) {
             // marker: { color: '#596BC2' }
           };
 
-          // // Create a stacked bar chart using Plotly
-          // const trace1 = {
-          //   x: worldwideData.slice(0, 20).map(entry => entry.Rank),
-          //   y: worldwideData.slice(0, 20).map(entry => entry.Foreign),
-          //   type: 'bar',
-          //   name: 'Foreign',
-          //   hovertext: worldwideData.slice(0, 20).map(entry => entry['Release Group']),
-          //   marker: { color: '#596BC2' }
-          // };
-
-          // const trace2 = {
-          //   x: worldwideData.slice(0, 20).map(entry => entry.Rank),
-          //   y: worldwideData.slice(0, 20).map(entry => entry.Domestic),
-          //   type: 'bar',
-          //   name: 'Domestic',
-          //   hovertext: worldwideData.slice(0, 20).map(entry => entry['Release Group']),
-          //   marker: { color: '#BED1E9' }
-          // };
-
           const data = [trace1, trace2, trace3];
           // const data = [trace1, trace2];
 
@@ -78,7 +56,7 @@ function stackedBar(year) {
             xaxis: { title: 'Months' },
             yaxis: { title: 'Dollars' },
             legend: { title: '' },
-            title: 'Gross Movie Revenue 2023 vs Previous Years',
+            title: `Gross Movie Revenue in 2023 vs ${year}`,
             // hovermode: 'closest',
             // template: 'plotly_white',
             barmode: 'stack' // Stacked bar chart
@@ -91,4 +69,9 @@ function stackedBar(year) {
     })
     .catch(error => console.error('Error fetching the CSV file:', error));
 }
-stackedBar(2023);
+
+stackedBar(2019);
+
+function optionChange(year) {
+  stackedBar(year)
+  };

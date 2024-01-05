@@ -1,9 +1,7 @@
 function overlapHist(year) {
 
 
-
-
-    fetch('js/master_merged_df.csv')
+    fetch('js/master_merged_df_renamed.csv')
         .then(response => response.text())
         .then(csvData => {
             // Parse the CSV data using PapaParse
@@ -13,17 +11,20 @@ function overlapHist(year) {
                 complete: function (papaResults) {
                     // papaResults.data contains the parsed data as an array of objects
                     const monthlyData = papaResults.data;
+                    let dataVariable = monthlyData.filter((sample) => sample.Year === parseInt(year));
+
 
                     // .filter(year) goes here 
 
                     console.log(monthlyData)
 
-                    var x1 = [8, 10, 12, 28, 36, 45, 68, 77, 115]
-                    var x2 = [11, 13, 25, 49, 53, 62, 62, 85, 145, 155]
+                    var x1 = dataVariable.map(entry => entry.netReleases)
+                    var x2 = dataVariable.map(entry => entry.holidayReleases)
 
                     var trace1 = {
                         x: x1,
                         type: "histogram",
+                        name: `${year} Non-Holiday Releases`,
                         nbinsx: 30,
                         bargap: 0.2,
                         opacity: 0.5,
@@ -34,6 +35,7 @@ function overlapHist(year) {
                     var trace2 = {
                         x: x2,
                         type: "histogram",
+                        name: `${year} Holiday Releases`,
                         nbinsx: 30,
                         bargap: 0.2,
                         opacity: 0.6,
@@ -43,24 +45,15 @@ function overlapHist(year) {
                     };
 
                     var data = [trace1, trace2];
-                    var layout = { barmode: "overlay" };
+                    var layout = { 
+                        xaxis: { title: '# of Releases' },
+                        yaxis: { title: 'Frequency' },
+                        legend: { title: '' },
+                        title: `Monthly Release Totals in ${year}`,
+                        barmode: "overlay" };
+
                     Plotly.newPlot("myHistReleases", data, layout);
 
-                    // const data = [trace1, trace2, trace3];
-                    // // const data = [trace1, trace2];
-
-                    // const layout = {
-                    //   xaxis: { title: 'Months' },
-                    //   yaxis: { title: 'Dollars' },
-                    //   legend: { title: '' },
-                    //   title: 'Gross Movie Revenue 2023 vs Previous Years',
-                    //   // hovermode: 'closest',
-                    //   // template: 'plotly_white',
-                    //   barmode: 'stack' // Stacked bar chart
-                    // };
-
-                    // // Render the chart
-                    // Plotly.newPlot('myBar', data, layout);
                 }
             });
         })
